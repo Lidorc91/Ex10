@@ -6,27 +6,22 @@ import java.io.IOException;
 import java.util.Scanner;
 
 public class IOSearcher implements FileSearcher {
-    volatile boolean stopSearch;
-    Thread t;
+
+    private volatile boolean stopSearch = false;
 
     @Override
     public boolean search(String word, String... fileNames) {
-        t = new Thread(searchFiles(word, fileNames));
-        boolean b = t.start();
-    }
-
-    private boolean searchFiles(String word,String... fileNames){
         String searchedWord;
         for (String name : fileNames) {
             try {
                 FileReader file = new FileReader(name);
                 Scanner s = new Scanner(file);
                 try {
-                    while (s.hasNext() && !stopSearch) {
+                    while (s.hasNext() && stopSearch == false) {
                         searchedWord = s.next();
                         String[] splitWord = searchedWord.split(",|\\.");
                         for (String w : splitWord) {
-                            if (w == word) {
+                            if (w.equals(word)) {
                                 return true;
                             }
                         }
@@ -50,5 +45,4 @@ public class IOSearcher implements FileSearcher {
     public void stop() {
         stopSearch = true;
     }
-
 }
